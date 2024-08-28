@@ -8,10 +8,26 @@ import { WarningFilled } from '@openedx/paragon/icons';
 import genericMessages from '../../generic/messages';
 
 const LogistrationAlert = ({ intl }) => {
+
+  const currentUrl = new URL(global.location.href); // Get the current URL
+
+  const lmsRegisterUrl = new URL(`${getConfig().LMS_BASE_URL}/register`); // Base URL for register
+  const lmsLoginUrl = new URL(`${getConfig().LMS_BASE_URL}/login`); // Base URL for login
+
+  // Preserve existing query parameters from the base URL
+  const params = new URLSearchParams(global.location.search);
+
+  // Add the 'next' parameter with the current URL encoded
+  params.set('next', currentUrl.href);
+
+  lmsRegisterUrl.search = params.toString();
+  lmsLoginUrl.search = params.toString();
+
+
   const signIn = (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
-      destination={`${getLoginRedirectUrl(global.location.href)}`}
+      destination={lmsLoginUrl.toString()}
     >
       {intl.formatMessage(genericMessages.signInLowercase)}
     </Hyperlink>
@@ -22,7 +38,7 @@ const LogistrationAlert = ({ intl }) => {
   const register = (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
-      destination={`${getConfig().LMS_BASE_URL}/register?next=${encodeURIComponent(global.location.href)}`}
+      destination={lmsRegisterUrl.toString()}
     >
       {intl.formatMessage(genericMessages.registerLowercase)}
     </Hyperlink>
